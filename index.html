@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>แปลงสกุลเงิน - เยน บาท ดอลลาร์</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Prompt', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+    <div class="p-4">
+        <div class="max-w-md mx-auto space-y-4">
+            <!-- Header -->
+            <div class="text-center py-6">
+                <div class="flex items-center justify-center gap-2 mb-2">
+                    <svg class="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                    </svg>
+                    <h1 class="text-2xl font-bold text-gray-800">แปลงสกุลเงิน</h1>
+                </div>
+                <p class="text-sm text-gray-600">เยน • บาท • ดอลลาร์</p>
+            </div>
+
+            <!-- Currency Converter Card -->
+            <div class="bg-white rounded-2xl shadow-lg p-6 space-y-4">
+                <div class="space-y-3">
+                    <label class="block text-sm font-medium text-gray-700">
+                        เลือกสกุลเงินที่จะใส่
+                    </label>
+                    <select id="currencySelect" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-lg">
+                        <option value="JPY">เยน (JPY)</option>
+                        <option value="THB">บาท (THB)</option>
+                        <option value="USD">ดอลลาร์ (USD)</option>
+                    </select>
+                </div>
+
+                <div class="space-y-2">
+                    <label class="block text-sm font-medium text-gray-700">
+                        จำนวนเงิน
+                    </label>
+                    <div class="relative">
+                        <span id="currencySymbol" class="absolute left-4 top-1/2 -translate-y-1/2 text-2xl text-gray-400">
+                            ¥
+                        </span>
+                        <input type="number" id="amountInput" placeholder="0.00" class="w-full pl-12 pr-4 py-4 text-2xl border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                    </div>
+                </div>
+
+                <div id="resultsContainer" class="space-y-3 pt-4 border-t-2 border-gray-100 hidden">
+                    <h3 class="text-sm font-medium text-gray-700">ผลลัพธ์</h3>
+                    <div id="results"></div>
+                </div>
+            </div>
+
+            <!-- Notes Section -->
+            <div class="bg-white rounded-2xl shadow-lg p-6 space-y-4">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"></path>
+                        </svg>
+                        <h2 class="text-lg font-bold text-gray-800">โน๊ตของฉัน</h2>
+                    </div>
+                    <button id="toggleNoteBtn" class="p-2 bg-amber-100 text-amber-600 rounded-lg hover:bg-amber-200 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <div id="noteInputContainer" class="space-y-2 hidden">
+                    <input type="text" id="noteInput" placeholder="เช่น: 100 เยน = 20 บาท" class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent">
+                    <button id="addNoteBtn" class="w-full py-3 bg-amber-500 text-white font-medium rounded-xl hover:bg-amber-600 transition-colors">
+                        บันทึกโน๊ต
+                    </button>
+                </div>
+
+                <div id="notesList" class="space-y-2 max-h-64 overflow-y-auto">
+                    <p class="text-center text-gray-400 py-8">ยังไม่มีโน๊ต</p>
+                </div>
+            </div>
+
+            <!-- Exchange Rate Info -->
+            <div class="bg-white/50 backdrop-blur rounded-xl p-4 text-center text-sm text-gray-600">
+                <p>อัตราแลกเปลี่ยนโดยประมาณ</p>
+                <p class="text-xs mt-1">1 เยน ≈ 0.23 บาท ≈ 0.0067 ดอลลาร์</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // อัตราแลกเปลี่ยน
+        const rates = {
+            JPY: 1,
+            THB: 0.23,
+            USD: 0.0067
+        };
+
+        const currencySymbols = {
+            JPY: '¥',
+            THB: '฿',
+            USD: '$'
+        };
+
+        const currencyNames = {
+            JPY: 'เยน (JPY)',
+            THB: 'บาท (THB)',
+            USD: 'ดอลลาร์ (USD)'
+        };
+
+        let notes = [];
+
+        // Elements
+        const currencySelect = document.getElementById('currencySelect');
+        const amountInput = document.getElementById('amountInput');
+        const currencySymbol = document.getElementById('currencySymbol');
+        const resultsContainer = document.getElementById('resultsContainer');
+        const results = document.getElementById('results');
+        const toggleNoteBtn = document.getElementById('toggleNoteBtn');
+        const noteInputContainer = document.getElementById('noteInputContainer');
+        const noteInput = document.getElementById('noteInput');
+        const addNoteBtn = document.getElementById('addNoteBtn');
+        const notesList = document.getElementById('notesList');
+
+        // Load notes from localStorage
+        function loadNotes() {
+            const saved = localStorage.getItem('currencyNotes');
+            if (saved) {
+                notes = JSON.parse(saved);
+                renderNotes();
+            }
+        }
+
+        // Save notes to localStorage
+        function saveNotes() {
+            localStorage.setItem('currencyNotes', JSON.stringify(notes));
+        }
+
+        // Format number
+        function formatNumber(num) {
+            return new Intl.NumberFormat('th-TH', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }).format(num);
+        }
+
+        // Convert currency
+        function convertCurrency(value, from) {
+            if (!value || isNaN(value)) return null;
+            
+            const numValue = parseFloat(value);
+            const inJPY = numValue / rates[from];
+            
+            return {
+                JPY: inJPY,
+                THB: inJPY * rates.THB,
+                USD: inJPY * rates.USD
+            };
+        }
+
+        // Update results
+        function updateResults() {
+            const amount = amountInput.value;
+            const selectedCurrency = currencySelect.value;
+
+            if (!amount) {
+                resultsContainer.classList.add('hidden');
+                return;
+            }
+
+            const converted = convertCurrency(amount, selectedCurrency);
+            if (!converted) {
+                resultsContainer.classList.add('hidden');
+                return;
+            }
+
+            resultsContainer.classList.remove('hidden');
+            results.innerHTML = '';
+
+            Object.keys(currencyNames).forEach(code => {
+                if (code !== selectedCurrency) {
+                    const div = document.createElement('div');
+                    div.className = 'flex justify-between items-center bg-gradient-to-r from-indigo-50 to-blue-50 rounded-xl p-4';
+                    div.innerHTML = `
+                        <span class="text-gray-700 font-medium">${currencyNames[code]}</span>
+                        <span class="text-xl font-bold text-indigo-600">
+                            ${currencySymbols[code]} ${formatNumber(converted[code])}
+                        </span>
+                    `;
+                    results.appendChild(div);
+                }
+            });
+        }
+
+        // Update currency symbol
+        function updateCurrencySymbol() {
+            currencySymbol.textContent = currencySymbols[currencySelect.value];
+        }
+
+        // Render notes
+        function renderNotes() {
+            if (notes.length === 0) {
+                notesList.innerHTML = '<p class="text-center text-gray-400 py-8">ยังไม่มีโน๊ต</p>';
+                return;
+            }
+
+            notesList.innerHTML = notes.map(note => `
+                <div class="flex items-start justify-between bg-amber-50 rounded-lg p-3 group">
+                    <p class="text-gray-700 flex-1">${note.text}</p>
+                    <button onclick="deleteNote('${note.id}')" class="ml-2 p-1 text-red-400 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                        </svg>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        // Add note
+        function addNote() {
+            const text = noteInput.value.trim();
+            if (!text) return;
+
+            const note = {
+                id: Date.now().toString(),
+                text: text,
+                timestamp: new Date().toISOString()
+            };
+
+            notes.push(note);
+            saveNotes();
+            renderNotes();
+            noteInput.value = '';
+            noteInputContainer.classList.add('hidden');
+        }
+
+        // Delete note
+        window.deleteNote = function(id) {
+            notes = notes.filter(n => n.id !== id);
+            saveNotes();
+            renderNotes();
+        };
+
+        // Event listeners
+        currencySelect.addEventListener('change', () => {
+            updateCurrencySymbol();
+            updateResults();
+        });
+
+        amountInput.addEventListener('input', updateResults);
+
+        toggleNoteBtn.addEventListener('click', () => {
+            noteInputContainer.classList.toggle('hidden');
+        });
+
+        addNoteBtn.addEventListener('click', addNote);
+
+        noteInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                addNote();
+            }
+        });
+
+        // Initialize
+        loadNotes();
+        updateCurrencySymbol();
+    </script>
+</body>
+</html>
