@@ -47,7 +47,7 @@
                         <span id="currencySymbol" class="absolute left-4 top-1/2 -translate-y-1/2 text-2xl text-gray-400">
                             ¥
                         </span>
-                        <input type="number" id="amountInput" placeholder="0.00" class="w-full pl-12 pr-4 py-4 text-2xl border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                        <input type="number" inputmode="decimal" id="amountInput" placeholder="0.00" class="w-full pl-12 pr-4 py-4 text-2xl border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
                     </div>
                 </div>
 
@@ -85,7 +85,7 @@
                     <div class="space-y-2">
                         <label class="block text-sm font-medium text-gray-700">1 เยน (JPY) =</label>
                         <div class="flex items-center gap-2">
-                            <input type="number" id="rateJPY" value="1" disabled class="flex-1 px-4 py-2 bg-gray-100 border border-gray-200 rounded-lg text-gray-500" step="0.0001">
+                            <input type="number" inputmode="decimal" id="rateJPY" value="1" disabled class="flex-1 px-4 py-2 bg-gray-100 border border-gray-200 rounded-lg text-gray-500" step="0.0001">
                             <span class="text-gray-600 font-medium">JPY</span>
                         </div>
                     </div>
@@ -93,7 +93,7 @@
                     <div class="space-y-2">
                         <label class="block text-sm font-medium text-gray-700">1 เยน (JPY) =</label>
                         <div class="flex items-center gap-2">
-                            <input type="number" id="rateTHB" value="0.23" class="flex-1 px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent" step="0.0001">
+                            <input type="number" inputmode="decimal" id="rateTHB" value="0.23" class="flex-1 px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent" step="0.0001">
                             <span class="text-gray-600 font-medium">THB</span>
                         </div>
                     </div>
@@ -101,7 +101,7 @@
                     <div class="space-y-2">
                         <label class="block text-sm font-medium text-gray-700">1 เยน (JPY) =</label>
                         <div class="flex items-center gap-2">
-                            <input type="number" id="rateUSD" value="0.0067" class="flex-1 px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent" step="0.0001">
+                            <input type="number" inputmode="decimal" id="rateUSD" value="0.0067" class="flex-1 px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent" step="0.0001">
                             <span class="text-gray-600 font-medium">USD</span>
                         </div>
                     </div>
@@ -109,34 +109,6 @@
                     <button id="saveRateBtn" class="w-full py-3 bg-green-500 text-white font-medium rounded-xl hover:bg-green-600 transition-colors">
                         บันทึกอัตราแลกเปลี่ยน
                     </button>
-                </div>
-            </div>
-
-            <!-- Notes Section -->
-            <div class="bg-white rounded-2xl shadow-lg p-6 space-y-4">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-2">
-                        <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"></path>
-                        </svg>
-                        <h2 class="text-lg font-bold text-gray-800">โน๊ตของฉัน</h2>
-                    </div>
-                    <button id="toggleNoteBtn" class="p-2 bg-amber-100 text-amber-600 rounded-lg hover:bg-amber-200 transition-colors">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-                        </svg>
-                    </button>
-                </div>
-
-                <div id="noteInputContainer" class="space-y-2 hidden">
-                    <input type="text" id="noteInput" placeholder="เช่น: 100 เยน = 20 บาท" class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent">
-                    <button id="addNoteBtn" class="w-full py-3 bg-amber-500 text-white font-medium rounded-xl hover:bg-amber-600 transition-colors">
-                        บันทึกโน๊ต
-                    </button>
-                </div>
-
-                <div id="notesList" class="space-y-2 max-h-64 overflow-y-auto">
-                    <p class="text-center text-gray-400 py-8">ยังไม่มีโน๊ต</p>
                 </div>
             </div>
         </div>
@@ -161,18 +133,11 @@
             USD: 'ดอลลาร์ (USD)'
         };
 
-        var notes = [];
-
         var currencySelect = document.getElementById('currencySelect');
         var amountInput = document.getElementById('amountInput');
         var currencySymbol = document.getElementById('currencySymbol');
         var resultsContainer = document.getElementById('resultsContainer');
         var results = document.getElementById('results');
-        var toggleNoteBtn = document.getElementById('toggleNoteBtn');
-        var noteInputContainer = document.getElementById('noteInputContainer');
-        var noteInput = document.getElementById('noteInput');
-        var addNoteBtn = document.getElementById('addNoteBtn');
-        var notesList = document.getElementById('notesList');
         var toggleRateBtn = document.getElementById('toggleRateBtn');
         var rateInputContainer = document.getElementById('rateInputContainer');
         var rateJPY = document.getElementById('rateJPY');
@@ -181,14 +146,6 @@
         var saveRateBtn = document.getElementById('saveRateBtn');
         var rateDisplayText = document.getElementById('rateDisplayText');
 
-        function loadNotes() {
-            var saved = localStorage.getItem('currencyNotes');
-            if (saved) {
-                notes = JSON.parse(saved);
-                renderNotes();
-            }
-        }
-
         function loadRates() {
             var saved = localStorage.getItem('currencyRates');
             if (saved) {
@@ -196,10 +153,6 @@
                 updateRateInputs();
                 updateRateDisplay();
             }
-        }
-
-        function saveNotes() {
-            localStorage.setItem('currencyNotes', JSON.stringify(notes));
         }
 
         function saveRates() {
@@ -267,58 +220,12 @@
             currencySymbol.textContent = currencySymbols[currencySelect.value];
         }
 
-        function renderNotes() {
-            if (notes.length === 0) {
-                notesList.innerHTML = '<p class="text-center text-gray-400 py-8">ยังไม่มีโน๊ต</p>';
-                return;
-            }
-
-            notesList.innerHTML = notes.map(function(note) {
-                return '<div class="flex items-start justify-between bg-amber-50 rounded-lg p-3 group"><p class="text-gray-700 flex-1">' + note.text + '</p><button onclick="deleteNote(\'' + note.id + '\')" class="ml-2 p-1 text-red-400 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-opacity"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button></div>';
-            }).join('');
-        }
-
-        function addNote() {
-            var text = noteInput.value.trim();
-            if (!text) return;
-
-            var note = {
-                id: Date.now().toString(),
-                text: text,
-                timestamp: new Date().toISOString()
-            };
-
-            notes.push(note);
-            saveNotes();
-            renderNotes();
-            noteInput.value = '';
-            noteInputContainer.classList.add('hidden');
-        }
-
-        window.deleteNote = function(id) {
-            notes = notes.filter(function(n) { return n.id !== id; });
-            saveNotes();
-            renderNotes();
-        };
-
         currencySelect.addEventListener('change', function() {
             updateCurrencySymbol();
             updateResults();
         });
 
         amountInput.addEventListener('input', updateResults);
-
-        toggleNoteBtn.addEventListener('click', function() {
-            noteInputContainer.classList.toggle('hidden');
-        });
-
-        addNoteBtn.addEventListener('click', addNote);
-
-        noteInput.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                addNote();
-            }
-        });
 
         toggleRateBtn.addEventListener('click', function() {
             rateInputContainer.classList.toggle('hidden');
@@ -344,7 +251,6 @@
         });
 
         loadRates();
-        loadNotes();
         updateCurrencySymbol();
     </script>
 </body>
